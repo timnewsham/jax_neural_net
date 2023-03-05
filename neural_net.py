@@ -46,7 +46,7 @@ def loss(layers, I, EO):
     return square_error(network(I, layers), EO)
 
 @jax.jit
-def gradient_descent(n, layers, I, EO, rate):
+def gradient_descent(layers, I, EO, rate):
     gradient = jax.grad(loss)(layers, I, EO)
     return [
         (W - rate * dw, B - rate * db)
@@ -80,6 +80,6 @@ def train(sizes, training_data, iters=100, training_rate=0.1):
         loss0 = loss(layers, I, EO)
         print(f"{n} Loss: {loss0}\r", end='')
 
-        layers = gradient_descent(n, layers, I, EO, training_rate)
+        layers = gradient_descent(layers, I, EO, training_rate)
     print()
     return layers
