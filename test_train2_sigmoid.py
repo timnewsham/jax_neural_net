@@ -10,6 +10,7 @@ def test():
         [[1,1], [0,1]],
     ], dtype=np.float32)
 
+    set_activation(sigmoid)
     net = train((2,4,2), training_data, iters=1000)
     print(f"\ntrained network {net}\n")
 

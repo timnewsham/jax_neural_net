@@ -10,13 +10,21 @@ def sigmoid(x):
 def gelu(x):
     return 0.5 * x * (1 + np.tanh(np.sqrt(2 / np.pi) * (x + 0.044715 * x**3)))
 
+activation = gelu
+
+def set_activation(f):
+    """
+    Set the activation function.
+    Due to the way jax jit works, this can only be done once
+    before evaluating or training the network.
+    """
+    global activation
+    activation = f
+
 @jax.jit
 def prebias(x):
     """Bias boolean inputs to the range -1,1"""
     return x * 2.0 - 1.0
-
-#activation = sigmoid
-activation = gelu
 
 @jax.jit
 def softmax(x):
