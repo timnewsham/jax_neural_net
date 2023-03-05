@@ -10,9 +10,12 @@ def sigmoid(x):
 def gelu(x):
     return 0.5 * x * (1 + np.tanh(np.sqrt(2 / np.pi) * (x + 0.044715 * x**3)))
 
-# TODO: why doesnt this train well with sigmoid?!
-#activation = sigmoid
+@jax.jit
+def prebias(x):
+    """Bias boolean inputs to the range -1,1"""
+    return x * 2.0 - 1.0
 
+#activation = sigmoid
 activation = gelu
 
 @jax.jit
@@ -32,6 +35,7 @@ def network(I, layers):
         O: vector-M
     O: vector-M
     """
+    I = prebias(I)
     for W, B in layers:
         Z = I @ W + B
         I = activation(Z)
@@ -56,7 +60,8 @@ def gradient_descent(layers, I, EO, rate):
 random_key = jax.random.PRNGKey(0)
 
 def random_layer(input_size, output_size):
-    W = jax.random.uniform(random_key, shape=(input_size, output_size))
+    # scale W's according to number of inputs to avoid saturation
+    W = jax.random.uniform(random_key, shape=(input_size, output_size)) / np.sqrt(input_size)
     B = jax.random.uniform(random_key, shape=(output_size,))
     return W, B
 
