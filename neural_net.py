@@ -67,12 +67,18 @@ def gradient_descent(layers, I, EO, rate):
         for (W, B), (dw, db) in zip(layers, gradient)
     ]
 
-random_key = jax.random.PRNGKey(0)
+random_seed = 0
+random_key = jax.random.PRNGKey(random_seed)
 
 def random_layer(input_size, output_size):
+    global random_key
+
     # scale W's according to number of inputs to avoid saturation
-    W = jax.random.uniform(random_key, shape=(input_size, output_size)) / np.sqrt(input_size)
-    B = jax.random.uniform(random_key, shape=(output_size,))
+    random_key, subkey = jax.random.split(random_key)
+    W = jax.random.uniform(subkey, shape=(input_size, output_size)) / np.sqrt(input_size)
+
+    random_key, subkey = jax.random.split(random_key)
+    B = jax.random.uniform(subkey, shape=(output_size,))
     return W, B
 
 def random_net(sizes):
