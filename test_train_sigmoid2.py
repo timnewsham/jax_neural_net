@@ -1,21 +1,15 @@
 #!/usr/bin/env python
 from neural_net import *
+from andfunc import *
 
 def test():
     # train for the AND function
-    training_data = np.array([
-        [[0,0], [1,0]],
-        [[0,1], [1,0]],
-        [[1,0], [1,0]],
-        [[1,1], [0,1]],
-    ], dtype=np.float32)
-
     set_activation(sigmoid)
-    net = train((2,4,2), training_data, iters=1000)
+    net = train((2,4,2), I, EO, iters=1000)
     print(f"\ntrained network {net}\n")
 
     # try it out
-    for input in training_data[:,0]:
+    for input in I:
         outputs = network(input, net)
         best = outputs.argmax()
         print(f"{input} -> {outputs} best {best}")

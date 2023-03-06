@@ -43,7 +43,9 @@ def network(I, layers):
         O: vector-M
     O: vector-M
     """
-    I = prebias(I)
+    # without prebias, test_train_sigmoid*.py dont work well...
+    #I = prebias(I)
+
     for W, B in layers:
         Z = I @ W + B
         I = activation(Z)
@@ -73,26 +75,25 @@ def random_layer(input_size, output_size):
     B = jax.random.uniform(random_key, shape=(output_size,))
     return W, B
 
-def random_layers(sizes):
+def random_net(sizes):
     return [
         random_layer(input_size, output_size)
         for input_size, output_size in zip(sizes, sizes[1:])
     ]
 
-def train(sizes, training_data, iters=100, training_rate=0.1):
+def train_net(layers, I, EO, iters=100, training_rate=0.1):
     """
     sizes is a list of the number of neurons in each layer.
-    training_data has two columns, inputs and expected outputs.
     """
-    I = training_data[:,0]
-    EO = training_data[:,1]
-
-    layers = random_layers(sizes)
     print("Training...")
     for n in range(iters):
         loss0 = loss(layers, I, EO)
-        print(f"{n} Loss: {loss0}\r", end='')
+        print(f"{n+1} Loss: {loss0}\r", end='')
 
         layers = gradient_descent(layers, I, EO, training_rate)
     print()
     return layers
+
+def train(sizes, I, EO, iters=1000, training_rate=0.1):
+    layers = random_net(sizes)
+    return train_net(layers, I, EO, iters, training_rate)
