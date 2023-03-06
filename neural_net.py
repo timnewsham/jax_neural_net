@@ -73,12 +73,16 @@ random_key = jax.random.PRNGKey(random_seed)
 def random_layer(input_size, output_size):
     global random_key
 
-    # scale W's according to number of inputs to avoid saturation
     random_key, subkey = jax.random.split(random_key)
-    W = jax.random.uniform(subkey, shape=(input_size, output_size)) / np.sqrt(input_size)
+    W = jax.random.uniform(subkey, shape=(input_size, output_size))
 
     random_key, subkey = jax.random.split(random_key)
     B = jax.random.uniform(subkey, shape=(output_size,))
+
+    # change range of W's and B's to be -0.5,0.5
+    # then scale W's according to number of inputs to avoid saturation
+    W = (W - 0.5) / np.sqrt(input_size)
+    B = B - 0.5
     return W, B
 
 def random_net(sizes):
